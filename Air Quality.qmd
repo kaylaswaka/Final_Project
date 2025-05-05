@@ -1,0 +1,44 @@
+library(tidyverse)
+
+airquality <- read.csv("data/air-quality.csv")
+
+# What is the distribution of air quality for Flushing and Whitestone (CD7)?
+
+flushing_data <- airquality |>
+  filter(Geo.Place.Name == "Flushing and Whitestone (CD7)")
+
+ggplot(data = flushing_data, aes(x = Data.Value)) + 
+  geom_histogram(bins = 10)
+
+ggplot(data = flushing_data, aes(y = Data.Value, x = Time.Period)) + 
+  geom_boxplot()
+
+# What are the mean, standard deviation, minimum, and 
+# maximum Nitrogen Dioxide levels by Time Period?
+
+flushing_data <- airquality |>
+  group_by(Time.Period) |>
+  summarize(
+    mean_value = mean(Data.Value, na.rm = TRUE),
+    sd_value = sd(Data.Value, na.rm = TRUE),
+    min_value = min(Data.Value, na.rm = TRUE),
+    max_value = max(Data.Value, na.rm = TRUE)
+  )
+print(flushing_data)
+
+# Two sample t-test 
+two_groups <- airquality |>
+  filter(Time.Period %in% c("Winter 2014-15", "Summer 2016"))
+t.test(Data.Value ~ Time.Period, data = two_groups)
+
+# Visual Data Boxplot
+two_groups <- airquality |>
+  filter(Time.Period %in% c("Winter 2014-15", "Summer 2016"))
+
+ggplot(two_groups, aes(x = Time.Period, y = Data.Value, fill = Time.Period)) +
+  geom_boxplot() +
+  labs(
+    x = "Time Period",
+    y = "Nitrogen Dioxide (ppb)"
+  )
+
